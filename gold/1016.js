@@ -1,37 +1,44 @@
-const solution = (N, data) => {
-    for(let i = 0; i < N; i++){
-        func(data[i][1] - data[i][0])
-    }
+const solution = (data) => {
+    func(data[0][0], data[0][1])
 }
 
-const func = (distance) => {
+const func = (min, max) => {
+    squareNumArr = primeSquare( Math.floor( Math.sqrt(max) ) );
+    let NumArr = [];
+    squareNumArr.forEach((el) => {
+        let start = Math.ceil(min/el)
+        let end = Math.floor(max/el)
+        for(let i = start; i <= end; i++){
+            NumArr[i*el] = 1;
+        }
+    });
     let result = 0;
-    let num = 1;
-    let i = 1;
-    let j = 0;
-    while(true){
-        result += i;
-        if(distance<=result){
-            console.log(num)
-            break;
-        }
-
-        j++;
-        num++;
-        if( j == 2){
-            i++;
-            j = 0;
+    for(let j = min; j <= max; j++){
+        if(!NumArr[j]){
+            result++;
         }
     }
+    console.log(result);
 }
 
+const primeSquare = (num) =>{
+    let primeSquareArr = [];
+    for(let i = 2; i <= num; i++){
+        let isPrime = true;
+        for(let j = 2; j*j <= i; j++){
+            if(i%j == 0)
+                isPrime = false;
+        }
+        if(isPrime)
+            primeSquareArr.push(i*i)
+    }
+    return primeSquareArr;
+}
 const fs = require('fs');
 let input = fs.readFileSync('/dev/stdin').toString().split('\n');
 
-const N = +input[0];
 const data = [];
-for(let i = 1; i < N + 1; i++){
-    data.push(input[i].split(' ').map((el) => +el));
-}
+data.push(input[0].split(' ').map((el) => +el));
 
-solution(N, data);
+
+solution(data);
