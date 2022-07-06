@@ -5,7 +5,7 @@ const solution = (N, data) => {
 }
 
 const func = (str) => {
-    let reg = /(100+1+|01)+/
+    let reg = /^(100+1+|01)+$/
     let result = reg.test(str);
     if(result)
         console.log("YES");
