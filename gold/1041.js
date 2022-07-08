@@ -36,11 +36,10 @@ const solution = (N, data) => {
 }
 
 
-//const fs = require('fs');
-//let input = fs.readFileSync('/dev/stdin').toString().split('\n');
-let input = "10\n1 1 1 1 50 1".toString().split('\n');
+const fs = require('fs');
+let input = fs.readFileSync('/dev/stdin').toString().split('\n');
 
 const N = +input[0];
-const data = input[1].split('').map((el) => +el);
+const data = input[1].split(' ').map((el) => +el);
 
 solution(N, data);
