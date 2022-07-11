@@ -1,4 +1,5 @@
 // 시간초과 에러
+// 점의 중점 방향으로만 이동하게 설계하면 될 것 같다.
 
 
 const solution = () => {
@@ -9,9 +10,13 @@ const solution = () => {
             if(data[i][j] == '*'){
                 start_bit = start_bit | (1 << (i*5 + j));
                 totalnum++;
+                goal[0] += i;
+                goal[1] += j;
             }
         }
     }
+    goal[0] /= totalnum;
+    goal[1] /= totalnum;
     func(start_bit, 0)
 }
 
@@ -36,16 +41,18 @@ const func = (bit, count) => { //BFS로 구현
             if(current_bit & (1 << i)){
                 row = Math.floor(i/5);
                 col = i%5;
-                if( ( (row - 1) != -1) && ( (current_bit & (1 << (row - 1)*5+col)) == 0) ){ //상
+                let dr = goal[0] - row;
+                let dc = goal[1] - col;
+                if( dr < 0 && ( (row - 1) != -1) && ( (current_bit & (1 << (row - 1)*5+col)) == 0) ){ //상
                     queue.push( [ ( current_bit - (1<< i) + (1<< (row-1)*5+col) ) , current_count + 1 ] )
                 }
-                if( ( (row + 1) != 5) && ( (current_bit & (1 << (row + 1)*5+col)) == 0) ){ //하
+                if( dr > 0 && ( (row + 1) != 5) && ( (current_bit & (1 << (row + 1)*5+col)) == 0) ){ //하
                     queue.push( [ ( current_bit - (1<< i) + (1<< (row+1)*5+col) ) , current_count + 1 ] )
                 }
-                if( ( (col - 1) != -1) && ( (current_bit & (1 << row*5+(col - 1) )) == 0) ){ //좌
+                if( dc < 0  && ( (col - 1) != -1) && ( (current_bit & (1 << row*5+(col - 1) )) == 0) ){ //좌
                     queue.push( [ ( current_bit - (1<< i) + (1<< row*5+(col-1)) ) , current_count + 1 ] )
                 }
-                if( ( (col + 1) != 5) && ( (current_bit & (1 << row*5+(col + 1) )) == 0) ){ //우
+                if( dc > 0  && ( (col + 1) != 5) && ( (current_bit & (1 << row*5+(col + 1) )) == 0) ){ //우
                     queue.push( [ ( current_bit - (1<< i) + (1<< row*5+(col+1)) ) , current_count + 1 ] )
                 }
             }
@@ -120,6 +127,10 @@ let input = fs.readFileSync('/dev/stdin').toString().split('\n');
 
 
 
+//let input = "*...*\n.....\n..*..\n.....\n*...*".toString().split('\n');
+
+
+
 
 const data = [];
 for(let i = 0; i < 5 ; i++){
@@ -130,5 +141,6 @@ for(let i = 0; i < 5 ; i++){
 
 const bitArr = new Array(1 << 25).fill(-1);
 let totalnum;
+let goal = [0, 0];
 
 solution();
