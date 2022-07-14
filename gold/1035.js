@@ -1,22 +1,25 @@
 // 시간초과 에러
 // 점의 중점 방향으로만 이동하게 설계하면 될 것 같다.
+// 점을 모을때 최소의 이동거리를 가지게 하기 위해서는 모든 점의 평균값이 아니라 중앙값을 구해야 한다.
 
 
 const solution = () => {
     let start_bit = 0;
     totalnum = 0;
+    let row = [];
+    let col = [];
     for(let i = 0; i<5; i++){
         for(let j = 0; j<5; j++){
             if(data[i][j] == '*'){
                 start_bit = start_bit | (1 << (i*5 + j));
                 totalnum++;
-                goal[0] += i;
-                goal[1] += j;
+                row.push( i )
+                col.push( j )
             }
         }
     }
-    goal[0] /= totalnum;
-    goal[1] /= totalnum;
+    goal[0] = row[(totalnum-1)/2];
+    goal[1] = col[(totalnum-1)/2];
     func(start_bit, 0)
 }
 
@@ -125,9 +128,6 @@ const connect_all = (bit) => {
 const fs = require('fs');
 let input = fs.readFileSync('/dev/stdin').toString().split('\n');
 
-
-
-//let input = "*...*\n.....\n..*..\n.....\n*...*".toString().split('\n');
 
 
 
