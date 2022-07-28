@@ -5,41 +5,64 @@ const N = +input[0]
 let data = input[1].trim().split(" ").map(el => +el);
 
 const solution = () => {
-    let result = [];
-
+    let all = [];
     let shelter = [];
     let start_pos = 0;
-    for(let i = 0; i < N; i++){
-        let cur_block = data[i];
-        if(shelter.length == 0){
-            shelter.push(cur_block);
-            result.push(i+1);
-        }
-        else{
-            let tmp = shelter[shelter.length - 1];
-            let minus_value = 0;
-            if(cur_block <= tmp){
-                if(start_pos + cur_block*2 > shelter[0]){
-                    shelter = [];
-                    shelter.push(cur_block);
-                    result.push(i + 1);
-                }
-                else{
-                    start_pos += cur_block;
-                    shelter.push(cur_block);
-                }
-            }
-            for(let j = shelter.length - 1; j >= 0; j--){
-                tmp += shelter[j];
-                if(cur_block <= tmp){
-                    break;
-                }
-            }
+    let min, max;
 
+    all.push([[-data[0], data[0]], data[0], 1])
+    min = -data[0];
+    max = data[0]
+    shelter.push([0, data[0]])
+
+    for(let i = 1; i < N; i++){
+        let x = start_pos;
+        let y = start_pos + data[i];
+        let breaker = false;
+        for(let j = 0;j < data[i]; j++){
+            for(let n = 0; n < shelter.length; n++){
+                let s_x = shelter[n][0];
+                let s_y = shelter[n][1];
+                if( ((x - j) == s_x && (y - j) == s_y) || ((x - j) < s_x && (y - j) == s_y) || ((x - j) == s_x && (y - j) < s_y) ){
+                    if((y - j) + data[i] > shelter[0][1]){
+                        shelter = [];
+                        shelter.push([(x - j) + data[i], (y - j) + data[i]])
+                        all.push([[(x - j)*2 + data[i], (x - j)*2 + data[i]*3], data[i], i+1])
+                        min = (((x - j)*2 + data[i]) < min )? ((x - j)*2 + data[i]) : min;
+                        max = (((x - j)*2 + data[i]*3) > max )? ((x - j)*2 + data[i]*3) : max;
+                        start_pos = (x - j) + data[i]
+                    }
+                    else{
+                        shelter.push([(x - j) + data[i], (y - j) + data[i]])
+                        all.push([[(x - j)*2 + data[i], (x - j)*2 + data[i]*3], data[i], i+1])
+                        min = (((x - j)*2 + data[i]) < min )? ((x - j)*2 + data[i]) : min;
+                        max = (((x - j)*2 + data[i]*3) > max )? ((x - j)*2 + data[i]*3) : max;
+                        start_pos = (x - j) + data[i]
+                    }
+
+                    breaker = true;
+                    break;
+
+                }
+            }
+            if(breaker)
+                break;
         }
     }
+    all.sort(function(a, b){return b[1] - a[1]})
+    let result = [];
 
-    console.log(result.join(" "));
+    for(let i = min + 0.5; i < max; i++){
+        for(let j = 0; j < all.length; j++){
+            if(all[j][0][0] < i && all[j][0][1] > i){
+                if(result.indexOf(all[j][2])<0){
+                    result.push(all[j][2])
+                }
+                break;
+            }
+        }
+    }
+    console.log(result.join(" "))
 }
 
 
