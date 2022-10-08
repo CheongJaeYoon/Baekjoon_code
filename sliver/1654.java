@@ -16,7 +16,7 @@ public class Main {
         long max = 0;
         for(int i = 0; i < k; i++){
             line[i] = Long.parseLong(br.readLine());
-            max = max < line[i] ? line[i] : max;
+            max = max < line[i] ? line[i] : max;,
         }
         int cnt;
         long cur_length;
