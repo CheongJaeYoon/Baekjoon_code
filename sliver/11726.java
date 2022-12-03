@@ -25,7 +25,6 @@ class Main{
         }
         BigInteger c = a.divide(b);
         c = c.mod(BigInteger.valueOf(10007));
-        //System.out.println(n + " " + k + " " + a.toString() + " " + b.toString() + " " + c.toString());
         return c.intValue();
     }
 }
