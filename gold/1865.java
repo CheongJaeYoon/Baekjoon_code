@@ -51,7 +51,7 @@ public class Main{
         for(int i = 0; i < n; i++){
             for(int j = 0; j < edge.size(); j++){
                 int[] tmp = edge.get(j);
-                if(dist[tmp[1]] > dist[tmp[0]] + tmp[2]){
+                if(dist[tmp[1]] > dist[tmp[0]] + tmp[2]){ // INF로 방문확인 하지 않는 이유 - 음의 사이클이 존재하는지만 알면 되므로
                     dist[tmp[1]] = dist[tmp[0]] + tmp[2];
                     if(i == n-1){
                         return true;
