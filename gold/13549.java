@@ -16,7 +16,7 @@ public class Main{
         else{
             boolean[] visited = new boolean[100001];
             Arrays.fill(visited, false);
-            Queue<int[]> queue = new LinkedList<>();
+            Deque<int[]> queue = new LinkedList<>();
             int res = Integer.MAX_VALUE;
             queue.add(new int[]{n, 0});
             while(!queue.isEmpty()){
@@ -28,16 +28,16 @@ public class Main{
                 for(int i = 0; i < 3; i++){
                     int tmp = cur;
                     if(i == 0) tmp*=2;
-                    if(i == 1) tmp--;
-                    if(i == 2) tmp++;
+                    if(i == 1) tmp++;
+                    if(i == 2) tmp--;
                     if(0 > tmp || tmp > 100000) continue;
                     if(visited[tmp] == false){
                         visited[tmp] = true;
-                        if(i == 1 || i == 2){
-                            queue.add(new int[]{tmp, cnt+1});
+                        if(i == 0){
+                            queue.addFirst(new int[]{tmp, cnt});
                         }
                         else{
-                            queue.add(new int[]{tmp, cnt});
+                            queue.addLast(new int[]{tmp, cnt+1});
                         }
                     }
                 }
