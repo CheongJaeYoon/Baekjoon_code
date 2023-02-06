@@ -29,20 +29,23 @@ class Main{
     }
 
     public static void func(Node node){
-        LinkedList<Node> cNodes = node.getNodes();
-        int cCost = 0;
-        int cTime = node.getTime();
+
         int cLevel = node.getLevel();
-        if(node.getLevel() != n){
-            cCost = cost[cLevel];
-            int unit = time[cLevel];
-            for(int i = cTime + unit; i <= t; i += unit){
-                Node tmp = new Node(cLevel+1, i);
-                node.addNode(tmp);
+        int cTime = node.getTime();
+
+        if(cLevel != n){
+
+            int unit_cost = cost[cLevel];
+            int unit_time = time[cLevel];
+
+            for(int i = cTime + unit_time; i <= t; i += unit_time){
+                node.addNode(new Node(cLevel+1, i));
             }
+            
+            LinkedList<Node> cNodes = node.getNodes();
             for(int i = 0; i < cNodes.size(); i++){
                 Node tmp = cNodes.get(i);
-                totalCost += cCost;
+                totalCost += unit_cost;
                 if(totalCost > c){
                     break;
                 }
