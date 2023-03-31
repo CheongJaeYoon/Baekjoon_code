@@ -50,7 +50,7 @@ class Line{
     }
 
     private int ccw(Point a, Point b, Point c){
-        long sum = (b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x);
+        long sum = ((long)b.x-(long)a.x)*((long)c.y-(long)a.y)-((long)b.y-(long)a.y)*((long)c.x-(long)a.x);
         if(sum > 0) return 1;
         if(sum < 0) return -1;
         return 0;
