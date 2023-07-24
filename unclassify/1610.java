@@ -85,7 +85,8 @@ class Node{
 
 /*
 
-2023-07-24 아이퀘스트 사내에서
+2023-07-24 아이퀘스트 사내에서.
+의존성있는 배낭문제로 변환가능하다 
 
 import java.io.BufferedReader;
 import java.io.IOException;
