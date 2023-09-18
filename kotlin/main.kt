@@ -5,51 +5,58 @@ import java.util.*
 //val path = File("").absolutePath.toString() + "\\kotlin\\testcase"
 //fun main(args: Array<String>) = with(BufferedReader(File(path).bufferedReader())) {
 fun main(args: Array<String>) = with (BufferedReader(InputStreamReader(System.`in`))) {
-    val n = readLine().toInt()
-    val treeArr = Array(n) {
-        var split = readLine().split(" ").map{ it.toInt() }
-        Tree(split[0], split[1], split[2])
+    val t = readLine().toInt()
+    for(i in 0 until t){
+        var st = StringTokenizer(readLine())
+        val row = st.nextToken().toInt()
+        val col = st.nextToken().toInt()
+        val arr = Array<String> (row) {
+            readLine()
+        }
+        println(solution(row, col, arr))
     }
-    val xSort = treeArr.map{it.x}.sorted()
-    val ySort = treeArr.map{it.y}.sorted()
-    var answer = Int.MAX_VALUE
-    var innerTrees = ArrayList<Tree>()
-    for(a in xSort.indices){
-        for(b in a until xSort.size){
-            for(c in ySort.indices){
-                for(d in c until ySort.size){
-                    var outerCnt = 0
-                    var treeCnt = 0
-                    val fence = (xSort[b] - xSort[a] + ySort[d] - ySort[c])*2
-                    for(tree in treeArr){
-                        if(tree.x >= xSort[a] && tree.x <= xSort[b] && tree.y >= ySort[c] && tree.y <= ySort[d]){
-                            innerTrees.add(tree)
-                        }
-                        else{
-                            outerCnt += tree.cnt
-                            treeCnt++
-                        }
-                    }
-                    if(fence <= outerCnt){
-                        answer = Math.min(answer, treeCnt)
-                    }
-                    else{
-                        innerTrees.sortByDescending { it.cnt }
-                        for(innerTree in innerTrees){
-                            outerCnt += innerTree.cnt
-                            treeCnt++
-                            if(fence <= outerCnt){
-                                answer = Math.min(answer, treeCnt)
-                                break
-                            }
-                        }
-                    }
-                    innerTrees.clear()
+}
+
+fun solution(row:Int, col:Int, arr: Array<String>): Int {
+    val dr = arrayOf(-1, 0, 1, -1, 0, 1)
+    val dc = arrayOf(-1, -1, -1, 1, 1, 1)
+    var graph = Array<MutableList<Int>>(row*col) { mutableListOf<Int>() }
+    var matching = IntArray(row*col) { -1 }
+    var totalNodeCnt = 0
+    for(r in 0 until row){
+        for(c in 0 until col){
+            if(arr[r][c] == '.'){
+                totalNodeCnt++
+                if(c%2 == 1) continue
+                for(i in 0..5){
+                    val nr = r + dr[i]
+                    val nc = c + dc[i]
+                    if(nr < 0 || nr >= row || nc < 0 || nc >= col) continue
+                    if(arr[nr][nc] == '.') graph[r*col + c].add(nr*col + nc)
                 }
             }
         }
     }
-    print(answer)
-
+    var matchingCnt = 0
+    var visited= mutableSetOf<Int>()
+    for(c in 0 until col) {
+        if(c%2 == 1) continue
+        for(r in 0 until row){
+            visited.clear()
+            if(biMatching(r*col + c, visited, matching, graph)) matchingCnt++
+        }
+    }
+    return totalNodeCnt - matchingCnt
 }
-class Tree(val x:Int, val y:Int, val cnt:Int)
+//Bipartite Matching 이분탐색
+fun biMatching(node: Int, visited: MutableSet<Int>, matching: IntArray, graph: Array<MutableList<Int>>):Boolean{
+    visited.add(node)
+    for(even in graph[node]){
+        if(matching[even] == -1 || (!visited.contains(matching[even]) && biMatching(matching[even], visited, matching, graph))){
+            matching[even] = node
+            matching[node] = even
+            return true
+        }
+    }
+    return false
+}
