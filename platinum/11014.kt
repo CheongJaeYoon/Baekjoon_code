@@ -18,62 +18,45 @@ fun main(args: Array<String>) = with (BufferedReader(InputStreamReader(System.`i
 }
 
 fun solution(row:Int, col:Int, arr: Array<String>): Int {
-    var result = 0;
-    var dp = Array<IntArray>(row) { IntArray(1 shl col) { 0 } }
-    var enableSitList = mutableListOf<IntArray>()
-    for(sit in 0 until (1 shl col)){
-        if(isAdjacent(sit, col)) enableSitList.add(intArrayOf(sit, sit.bitCount()))
-    }
+    val dr = arrayOf(-1, 0, 1, -1, 0, 1)
+    val dc = arrayOf(-1, -1, -1, 1, 1, 1)
+    var graph = Array<MutableList<Int>>(row*col) { mutableListOf<Int>() }
+    var matching = IntArray(row*col) { -1 }
+    var totalNodeCnt = 0
     for(r in 0 until row){
-        for(curSit in enableSitList){
-            if(isBlocked(curSit[0], arr[r])) continue
-            for(prevSit in enableSitList){
-                if(isEnable(prevSit[0], curSit[0], col)){
-                    dp[r][curSit[0]] = Math.max(dp[r][curSit[0]], if(r == 0) curSit[1] else dp[r-1][prevSit[0]] + curSit[1])
-                    result = Math.max(result, dp[r][curSit[0]])
+        for(c in 0 until col){
+            if(arr[r][c] == '.'){
+                totalNodeCnt++
+                if(c%2 == 1) continue
+                for(i in 0..5){
+                    val nr = r + dr[i]
+                    val nc = c + dc[i]
+                    if(nr < 0 || nr >= row || nc < 0 || nc >= col) continue
+                    if(arr[nr][nc] == '.') graph[r*col + c].add(nr*col + nc)
                 }
             }
         }
     }
-    return result
-}
-
-fun isEnable(prevSit: Int, curSit: Int, col: Int): Boolean {
-    for(i in 0 until col){
-        if(curSit.andWithBit(i)){
-            for(dc in intArrayOf(-1, 1)){
-                val nc = i + dc
-                if(nc < 0 || nc >= col) continue
-                if(prevSit.andWithBit(nc)) return false
-            }
+    var matchingCnt = 0
+    var visited= mutableSetOf<Int>()
+    for(c in 0 until col) {
+        if(c%2 == 1) continue
+        for(r in 0 until row){
+            visited.clear()
+            if(biMatching(r*col + c, visited, matching, graph)) matchingCnt++
         }
     }
-    return true
+    return totalNodeCnt - matchingCnt
 }
-
-fun isBlocked(curSit: Int, row: String): Boolean {
-    for(i in row.indices){
-        if(row[i] == 'x' && curSit.andWithBit(i)) return true
+//Bipartite Matching 이분탐색
+fun biMatching(node: Int, visited: MutableSet<Int>, matching: IntArray, graph: Array<MutableList<Int>>):Boolean{
+    visited.add(node)
+    for(even in graph[node]){
+        if(matching[even] == -1 || (!visited.contains(matching[even]) && biMatching(matching[even], visited, matching, graph))){
+            matching[even] = node
+            matching[node] = even
+            return true
+        }
     }
     return false
-}
-
-fun isAdjacent(sit: Int, col: Int): Boolean {
-    for(i in 0 until col-1){
-        if(sit.andWithBit(i) && sit.andWithBit(i+1))
-            return false
-    }
-    return true
-}
-
-infix fun Int.andWithBit(i:Int) = this and (1 shl i) > 0
-
-fun Int.bitCount(): Int {
-    var sit = this
-    var sum = 0
-    while(sit > 0){
-        sum += sit % 2
-        sit /= 2
-    }
-    return sum
 }
