@@ -6,32 +6,35 @@ import kotlin.math.log2
 var k = 0
 lateinit var parent: Array<IntArray>
 lateinit var level: Array<Int>
-lateinit var dist: Array<Int>
+lateinit var dist: Array<Long>
 lateinit var graph: Array<MutableList<IntArray>>
 
 //val path = File("").absolutePath.toString() + "\\kotlin\\testcase"
-//fun main() = with(BufferedReader(File(path).bufferedReader())) {
-fun main() = with (BufferedReader(InputStreamReader(System.`in`))) {
-    val n = readLine().toInt()
+//private val br = File(path).bufferedReader()
+private val br = System.`in`.bufferedReader()
+private val bw = System.out.bufferedWriter()
+fun main(){
+    val n = br.readLine().toInt()
     k = ceil(log2(n.toDouble())).toInt()
     var st: StringTokenizer
     parent = Array<IntArray>(n+1){ IntArray(k){ 0 } }
     level = Array<Int>(n+1){ 0 }
-    dist = Array<Int>(n+1){ 0 }
+    dist = Array<Long>(n+1){ 0 }
     graph = Array<MutableList<IntArray>>(n+1) { mutableListOf<IntArray>() }
     for(i in 0 until n-1){
-        st = StringTokenizer(readLine())
+        st = StringTokenizer(br.readLine())
         val from = st.nextToken().toInt()
         val to = st.nextToken().toInt()
         val dist = st.nextToken().toInt()
         graph[from].add(intArrayOf(to, dist))
         graph[to].add(intArrayOf(from, dist))
     }
+    dist[0] = 0
     init(0, 1, 1)
 
-    val m = readLine().toInt()
+    val m = br.readLine().toInt()
     for(i in 1..m){
-        st = StringTokenizer(readLine())
+        st = StringTokenizer(br.readLine())
         println(solution(st.nextToken().toInt(), st.nextToken().toInt()))
     }
 }
@@ -45,7 +48,7 @@ fun init(p_node: Int, c_node: Int, c_level: Int) {
     }
     for(child in graph[c_node]){
         if(child[0] == p_node) continue
-        dist[child[0]] = child[1]
+        dist[child[0]] = child[1] + dist[c_node]
         init(c_node, child[0], c_level+1)
     }
 }
@@ -83,15 +86,6 @@ fun solution(n1: Int, n2: Int): Long {
     }
     node1 = n1
     node2 = n2
-    var distance = 0L
-    while( node1 != lca){
-        distance += dist[node1]
-        node1 = parent[node1][0]
-    }
-    while( node2 != lca){
-        distance += dist[node2]
-        node2 = parent[node2][0]
-    }
 
-    return distance
+    return (dist[node1] - dist[lca]) + (dist[node2] - dist[lca])
 }
