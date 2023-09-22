@@ -25,7 +25,7 @@ fun main(){
 
     val solution = Solution(n, m, s, e)
     solution.init(input)
-    solution.solve()
+    solution.solve(input2)
 
     bw.append(solution.print())
     bw.flush()

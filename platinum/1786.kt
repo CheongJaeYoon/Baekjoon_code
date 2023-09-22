@@ -12,7 +12,7 @@ fun main(){
     br.close()
 
     val solution = Solution(t, p)
-    solution.solve()
+    solution.solve(input2)
 
     bw.append(solution.print())
     bw.flush()

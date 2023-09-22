@@ -1,91 +1,94 @@
 import java.io.*
 import java.util.*
-import kotlin.collections.ArrayList
+import kotlin.math.log2
+import kotlin.math.pow
 
 
 //val path = File("").absolutePath.toString() + "\\kotlin\\testcase"
 //private val br = File(path).bufferedReader()
 private val br = System.`in`.bufferedReader()
-private val bw = System.out.bufferedWriter()
 fun main(){
-    val st = StreamTokenizer(br)
-    val readInt = {
-        st.nextToken()
-        st.nval.toInt()
-    }
-    val n = readInt()
-    val m = readInt()
-    val input = Array(m){ intArrayOf() }
-    for(i in 0 until m){
-        input[i] = intArrayOf(readInt(), readInt(), readInt())
-    }
-    val s = readInt()
-    val e = readInt()
+    var st = StringTokenizer(br.readLine())
+    val n = st.nextToken().toInt()
+    val m = st.nextToken().toInt()
+    val k = st.nextToken().toInt()
+    val input1 = Array(n){ br.readLine().toLong() }
+    val input2 = Array(m+k){
+        st = StringTokenizer(br.readLine())
+        longArrayOf(st.nextToken().toLong(), st.nextToken().toLong(), st.nextToken().toLong())}
     br.close()
 
-    val solution = Solution(n, m, s, e)
-    solution.init(input)
-    solution.solve()
+    val solution = Solution(n, m, k, input1)
+    solution.init()
+    solution.solve(input2)
 
-    bw.append(solution.print())
-    bw.flush()
-    bw.close()
+    solution.print()
 }
 
-class Solution(val n: Int, val m: Int, val s: Int, val e: Int){
-    private val time = Array(n+1){0L}
-    private val indegree = Array(n+1){0}
-    private val edges = Array(n+1){ ArrayList<Edge>() }
-    private val reverseEdges = Array(n+1){ ArrayList<Edge>() }
-    private var cnt = 0
+class Solution(val n: Int, val m: Int, val k: Int, val arr: Array<Long>){
+    lateinit var segmentTree: Array<Long>
+    var result = StringBuilder("")
 
-    fun solve(){
-        val queue = LinkedList<Int>()
-        queue.add(s)
-        while(!queue.isEmpty()){
-            val cur = queue.poll()
-            for(next in edges[cur]){
-                if(time[next.e] < time[cur] + next.w){
-                    time[next.e] = time[cur] + next.w
+    fun solve(input: Array<LongArray>) {
+        for(command in input){
+            when(command[0]){
+                1L -> {
+                    update(command[1].toInt()-1, command[2])
+                    arr[command[1].toInt()-1] = command[2]
                 }
-                if(--indegree[next.e] == 0){
-                    queue.add(next.e)
-                }
-            }
-        }
-
-        val visited = Array<Boolean>(n+1) { false }
-        queue.add(e)
-        visited[e] = true
-        while(!queue.isEmpty()){
-            val cur = queue.poll()
-            for(next in reverseEdges[cur]){
-                if(time[next.e] == time[cur] - next.w){
-                    cnt++
-                    if(!visited[next.e]){
-                        visited[next.e] = true
-                        queue.add(next.e)
-                    }
+                else -> {
+                    result.append(subSum(command[1].toInt()-1, command[2].toInt()-1))
+                    result.append("\n")
                 }
             }
         }
     }
 
-    fun init(input: Array<IntArray>){
-        for(i in 0 until m){
-            val s = input[i][0]
-            val e = input[i][1]
-            val w = input[i][2]
-            edges[s].add(Edge(e, w))
-            reverseEdges[e].add(Edge(s, w))
-            indegree[e]++;
+    fun init() {
+        var treeSize = (2.0).pow((log2(n.toDouble()).toInt() + 2).toDouble()).toInt()
+        segmentTree = Array<Long>(treeSize){ 0L }
+
+        fun recursive(startIdx: Int, endIdx: Int, idx: Int): Long{
+            if(startIdx == endIdx){
+                segmentTree[idx] = arr[startIdx]
+            }
+            else{
+                val midIdx = (startIdx + endIdx)/2
+                segmentTree[idx] = recursive(startIdx, midIdx, idx*2) + recursive(midIdx + 1, endIdx, idx*2 + 1)
+            }
+            return segmentTree[idx]
         }
+
+        recursive(0, n-1, 1)
+    }
+
+    private fun update(idx: Int, num: Long){
+        fun recursive(searchIdx: Int, node: Int, nodeStart: Int, nodeEnd: Int, diff: Long){
+            if(searchIdx < nodeStart || nodeEnd < searchIdx) return
+            segmentTree[node] += diff
+
+            if(nodeStart != nodeEnd){
+                val nodeMid = (nodeStart + nodeEnd) / 2
+                recursive(searchIdx, node*2, nodeStart, nodeMid, diff)
+                recursive(searchIdx, node*2 + 1, nodeMid + 1, nodeEnd, diff)
+            }
+        }
+        recursive(idx, 1, 0, n-1, (num - arr[idx]))
+    }
+
+    private fun subSum(startIdx: Int, endIdx: Int): Long{
+        fun recursive(startIdx: Int, endIdx: Int, node: Int, nodeStart: Int, nodeEnd: Int): Long{
+            if(endIdx < nodeStart || nodeEnd < startIdx) return 0L
+            if(startIdx <= nodeStart && nodeEnd <= endIdx) return segmentTree[node]
+
+            val nodeMid = (nodeStart + nodeEnd) / 2
+            return recursive(startIdx, endIdx, node*2, nodeStart, nodeMid) + recursive(startIdx, endIdx, node*2 + 1, nodeMid + 1, nodeEnd)
+        }
+        return recursive(startIdx, endIdx, 1, 0, n-1)
     }
 
 
-    fun print(): String {
-        return "${time[e]}\n$cnt"
+    fun print(){
+        print(result.toString())
     }
 }
-
-data class Edge(val e: Int, val w: Int)
