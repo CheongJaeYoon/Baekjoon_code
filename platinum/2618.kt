@@ -37,10 +37,10 @@ class Solution(val event: Array<IntArray>, val n: Int, val w: Int) {
 
         val nextEvent = Math.max(police1, police2) + 1
         var result1 = if(police1 == 0){getDist(1, 1, event[nextEvent][0], event[nextEvent][1])}
-                        else{getDist(event[police1][0], event[police1][1], event[nextEvent][0], event[nextEvent][1])}
+        else{getDist(event[police1][0], event[police1][1], event[nextEvent][0], event[nextEvent][1])}
         result1 += totalDist(nextEvent, police2)
         var result2 = if(police2 == 0){getDist(n, n, event[nextEvent][0], event[nextEvent][1])}
-                        else{getDist(event[police2][0], event[police2][1], event[nextEvent][0], event[nextEvent][1])}
+        else{getDist(event[police2][0], event[police2][1], event[nextEvent][0], event[nextEvent][1])}
         result2 += totalDist(police1, nextEvent)
 
         dp[police1][police2] = Math.min(result1, result2)
