@@ -9,26 +9,40 @@ import kotlin.math.floor
 private val br = System.`in`.bufferedReader()
 fun main(){
     val st = StringTokenizer(br.readLine());
-    val num = st.nextToken().toInt();
-    if(num < 6){
-        val arr = intArrayOf(0, 1, 2, 3, 4, 5)
-        print(arr[num]);
-        return;
+    val n = st.nextToken().toInt();
+    val arr = Array(n){Array(2){ 0 }}
+    repeat(n){
+        val str = br.readLine().split(" ");
+        arr[it][0] = str[1].toInt();
+        arr[it][1] = str[2].toInt();
     }
-    val n = num/6;
-    var cur = n * 6;
-    var value = 1L + 3L*n*(n+1)
-    while(true){
-        if(cur == num){
-            print(value);
-            return;
+    arr.sortWith(Comparator { o1, o2 ->
+        when {
+            o1[0] - o2[0] > 0 -> 1
+            o1[0] == o2[0] -> when {
+                o1[1] - o2[1] > 0 -> 1
+                o1[1] == o2[1] -> 0
+                else -> -1
+            }
+            else -> -1
         }
-        cur++;
-        if(cur%6 == 1){
-            value += n
+    })
+    val queue = PriorityQueue<Int>();
+    for(lecture in arr){
+        if(queue.isEmpty()){
+            queue.add(lecture[1]);
         }
         else{
-            value += (n+1)
+            val prevEndTime = queue.peek();
+            if(prevEndTime <= lecture[0]){
+                queue.poll();
+                queue.add(lecture[1])
+            }
+            else{
+                queue.add(lecture[1])
+            }
         }
     }
+
+    print(queue.size)
 }
