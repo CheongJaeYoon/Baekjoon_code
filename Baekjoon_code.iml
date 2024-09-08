@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/bronze" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/gold" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/platinum" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/sliver" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/unclassify" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/bronze" />
+      <excludeFolder url="file://$MODULE_DIR$/gold" />
+      <excludeFolder url="file://$MODULE_DIR$/platinum" />
+      <excludeFolder url="file://$MODULE_DIR$/sliver" />
+      <excludeFolder url="file://$MODULE_DIR$/unclassify" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
+  </component>
+</module>
